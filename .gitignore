@@ -1,0 +1,11 @@
+out/
+*.class
+.idea/
+imagenes/
+*.pdf
+REPORTE/
+capturas/
+*.png
+*.tex
+Reporte*.md
+_backup*/

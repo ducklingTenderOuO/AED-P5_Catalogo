@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+import java.util.Comparator;
+
 public class GestorCartas {
     private ListaCircularDoble<Carta> todasLasCartas;
 
@@ -58,5 +60,39 @@ public class GestorCartas {
 
     public ListaCircularDoble<Carta> getTodasLasCartas() {
         return todasLasCartas;
+    }
+}
+    public ListaCircularDoble<Carta> obtenerListaPorAtaque(boolean menorAMayor) {
+        ListaCircularDoble<Carta> resultado = new ListaCircularDoble<>();
+        if (todasLasCartas.estaVacia()) return resultado;
+        Comparator<Carta> comparador = (c1, c2) -> {
+            int cmp = Integer.compare(c1.getAtkValor(), c2.getAtkValor());
+            if (!menorAMayor) cmp = -cmp;
+            if (cmp == 0) return c1.getNombre().compareToIgnoreCase(c2.getNombre());
+            return cmp;
+        };
+        NodoDoble<Carta> r = todasLasCartas.getInicio();
+        do {
+            if (r.getInfo().tieneAtk()) resultado.insertaPorCriterio(r.getInfo(), comparador);
+            r = r.getSig();
+        } while (r != todasLasCartas.getInicio());
+        return resultado;
+    }
+
+    public ListaCircularDoble<Carta> obtenerListaPorDefensa(boolean menorAMayor) {
+        ListaCircularDoble<Carta> resultado = new ListaCircularDoble<>();
+        if (todasLasCartas.estaVacia()) return resultado;
+        Comparator<Carta> comparador = (c1, c2) -> {
+            int cmp = Integer.compare(c1.getDefValor(), c2.getDefValor());
+            if (!menorAMayor) cmp = -cmp;
+            if (cmp == 0) return c1.getNombre().compareToIgnoreCase(c2.getNombre());
+            return cmp;
+        };
+        NodoDoble<Carta> r = todasLasCartas.getInicio();
+        do {
+            if (r.getInfo().tieneDef()) resultado.insertaPorCriterio(r.getInfo(), comparador);
+            r = r.getSig();
+        } while (r != todasLasCartas.getInicio());
+        return resultado;
     }
 }

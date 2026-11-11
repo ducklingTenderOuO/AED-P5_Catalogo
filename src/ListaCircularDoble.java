@@ -1,3 +1,5 @@
+import java.util.Comparator;
+
 public class ListaCircularDoble<T> {
     private NodoDoble<T> inicio;
     private NodoDoble<T> fin;
@@ -5,6 +7,71 @@ public class ListaCircularDoble<T> {
     public ListaCircularDoble() {
         this.inicio = null;
         this.fin = null;
+    }
+
+    public void insertaInicio(T dato) {
+        NodoDoble<T> n = new NodoDoble<>(dato);
+        if (inicio == null) {
+            inicio = fin = n;
+            n.setSig(inicio);
+            n.setAnt(inicio);
+        } else {
+            n.setSig(inicio);
+            inicio.setAnt(n);
+            inicio = n;
+            fin.setSig(inicio);
+            n.setAnt(fin);
+        }
+    }
+
+    public void insertaFin(T dato) {
+        NodoDoble<T> n = new NodoDoble<>(dato);
+        if (inicio == null) {
+            inicio = fin = n;
+            n.setSig(inicio);
+            n.setAnt(inicio);
+        } else {
+            n.setSig(inicio);
+            inicio.setAnt(n);
+            fin.setSig(n);
+            n.setAnt(fin);
+            fin = n;
+        }
+    }
+
+    public T eliminaInicio() {
+        T datoEliminado = null;
+        if (inicio == null) {
+            System.out.println("Lista vacia");
+        } else {
+            datoEliminado = inicio.getInfo();
+            if (inicio == fin) {
+                inicio = fin = null;
+            } else {
+                fin.setSig(inicio.getSig());
+                inicio = inicio.getSig();
+                inicio.setAnt(fin);
+            }
+        }
+        return datoEliminado;
+    }
+
+    public T eliminaFin() {
+        T datoEliminado = null;
+        if (inicio == null) {
+            System.out.println("Lista vacia");
+        } else {
+            datoEliminado = fin.getInfo();
+            if (inicio == fin) {
+                inicio = fin = null;
+            } else {
+                NodoDoble<T> r = fin.getAnt();
+                r.setSig(inicio);
+                inicio.setAnt(r);
+                fin = r;
+            }
+        }
+        return datoEliminado;
     }
 
     public boolean estaVacia() {
@@ -28,67 +95,38 @@ public class ListaCircularDoble<T> {
         return contador;
     }
 
-    public void insertaInicio(T dato) {
-        NodoDoble<T> n = new NodoDoble<>(dato);
-        if (inicio == null) {
-            inicio = n;
-            fin = n;
-            n.setSig(n);
-            n.setAnt(n);
-        } else {
-            n.setSig(inicio);
-            n.setAnt(fin);
-            inicio.setAnt(n);
-            fin.setSig(n);
-            inicio = n;
+    public int getIndiceDeNodo(NodoDoble<T> objetivo) {
+        if (inicio == null || objetivo == null) {
+            return 0;
         }
+        int indice = 1;
+        NodoDoble<T> r = inicio;
+        do {
+            if (r == objetivo) {
+                return indice;
+            }
+            indice++;
+            r = r.getSig();
+        } while (r != inicio);
+        return 1;
     }
 
-    public void insertaFin(T dato) {
-        NodoDoble<T> n = new NodoDoble<>(dato);
-        if (inicio == null) {
-            inicio = n;
-            fin = n;
-            n.setSig(n);
-            n.setAnt(n);
+    public void insertaPorCriterio(T dato, Comparator<T> comparador) {
+        if (inicio == null || comparador.compare(dato, inicio.getInfo()) < 0) {
+            insertaInicio(dato);
+        } else if (comparador.compare(dato, fin.getInfo()) >= 0) {
+            insertaFin(dato);
         } else {
-            n.setSig(inicio);
-            n.setAnt(fin);
-            fin.setSig(n);
-            inicio.setAnt(n);
-            fin = n;
+            NodoDoble<T> actual = inicio.getSig();
+            while (actual != inicio && comparador.compare(dato, actual.getInfo()) >= 0) {
+                actual = actual.getSig();
+            }
+            NodoDoble<T> n = new NodoDoble<>(dato);
+            NodoDoble<T> anterior = actual.getAnt();
+            anterior.setSig(n);
+            n.setAnt(anterior);
+            n.setSig(actual);
+            actual.setAnt(n);
         }
-    }
-
-    public T eliminaInicio() {
-        if (inicio == null) {
-            return null;
-        }
-        T datoEliminado = inicio.getInfo();
-        if (inicio == fin) {
-            inicio = null;
-            fin = null;
-        } else {
-            inicio = inicio.getSig();
-            inicio.setAnt(fin);
-            fin.setSig(inicio);
-        }
-        return datoEliminado;
-    }
-
-    public T eliminaFin() {
-        if (inicio == null) {
-            return null;
-        }
-        T datoEliminado = fin.getInfo();
-        if (inicio == fin) {
-            inicio = null;
-            fin = null;
-        } else {
-            fin = fin.getAnt();
-            fin.setSig(inicio);
-            inicio.setAnt(fin);
-        }
-        return datoEliminado;
     }
 }
